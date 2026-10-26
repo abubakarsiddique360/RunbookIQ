@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "pattern": "rm\\s+-[a-z]*r[a-z]*f?\\s+(/|~|\\*|\\$home)(\\s|$)",
+      "verdict": "blocked",
+      "reason": "recursive delete of a root, home or wildcard path"
+    },
+    {
+      "pattern": "\\bmkfs\\b|\\bdd\\s+if=.*of=/dev/",
+      "verdict": "blocked",
+      "reason": "filesystem formatting or raw device write"
+    },
+    {
+      "pattern": "\\bdrop\\s+(table|database|schema)\\b|\\btruncate\\s+table\\b",
+      "verdict": "blocked",
+      "reason": "destructive SQL without a backup step"
+    },
+    {
+      "pattern": "curl[^|]*\\|\\s*(ba)?sh|wget[^|]*\\|\\s*(ba)?sh",
+      "verdict": "blocked",
+      "reason": "piping a download into a shell"
+    },
+    {
+      "pattern": "kubectl\\s+delete\\s+(ns|namespace)\\s+prod",
+      "verdict": "blocked",
+      "reason": "deleting a production namespace"
+    },
+    {
+      "pattern": "\\bchmod\\s+-r\\s+777\\b|\\bchmod\\s+777\\b",
+      "verdict": "blocked",
+      "reason": "world-writable permissions"
+    },
+    {
+      "pattern": "\\bshutdown\\b|\\breboot\\b|\\binit\\s+0\\b",
+      "verdict": "blocked",
+      "reason": "host power control from a generated plan"
+    },
+    {
+      "pattern": "iptables\\s+-f|\\bufw\\s+disable\\b",
+      "verdict": "blocked",
+      "reason": "disabling the firewall"
+    },
+    {
+      "pattern": "git\\s+push\\s+.*--force",
+      "verdict": "blocked",
+      "reason": "force push from automation"
+    },
+    {
+      "pattern": "kubectl\\s+(delete|drain|cordon)\\b",
+      "verdict": "caution",
+      "reason": "changes cluster state"
+    },
+    {
+      "pattern": "systemctl\\s+(restart|stop|disable)\\b",
+      "verdict": "caution",
+      "reason": "restarts or stops a service"
+    },
+    {
+      "pattern": "\\b(scale|rollout|apply|patch)\\b",
+      "verdict": "caution",
+      "reason": "modifies deployed resources"
+    },
+    {
+      "pattern": "journalctl\\s+--vacuum|\\bfind\\b.*-delete\\b",
+      "verdict": "caution",
+      "reason": "deletes logs or files"
+    },
+    {
+      "pattern": "openssl\\s+(req|x509)\\b.*-(new|sign)",
+      "verdict": "caution",
+      "reason": "creates or signs certificates"
+    }
+  ],
+  "safe_prefixes": [
+    "kubectl get",
+    "kubectl describe",
+    "kubectl logs",
+    "kubectl top",
+    "df ",
+    "du ",
+    "ls ",
+    "cat ",
+    "ps ",
+    "free ",
+    "uptime",
+    "ping ",
+    "dig ",
+    "nslookup ",
+    "systemctl status",
+    "journalctl -u",
+    "openssl x509 -in",
+    "openssl s_client",
+    "ipsec status",
+    "curl -s"
+  ]
+}
